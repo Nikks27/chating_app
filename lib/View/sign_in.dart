@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../controller/auth_controller.dart';
 import '../services/auth_services.dart';
 import '../services/google_services.dart';
+import 'home/home_page.dart';
 class SignIn extends StatelessWidget {
   const SignIn({super.key});
 
@@ -19,12 +20,12 @@ class SignIn extends StatelessWidget {
       ),
       body:SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20, top: 130),
+          padding: EdgeInsets.only(left: 20, right: 20, top: 130),
           child: Column(
             children: [
               TextField(
                 controller: controller.txtEmail,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Email',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(
@@ -33,12 +34,12 @@ class SignIn extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(
+               SizedBox(
                 height: 27,
               ),
               TextField(
                 controller: controller.txtPassword,
-                decoration: const InputDecoration(
+                decoration:  InputDecoration(
                   hintText: 'Password',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(
@@ -47,7 +48,7 @@ class SignIn extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(
+               SizedBox(
                 height: 27,
               ),
               GestureDetector(
@@ -69,13 +70,13 @@ class SignIn extends StatelessWidget {
                 child: Container(
                   height: 55,
                   width: double.infinity,
-                  decoration: const BoxDecoration(
+                  decoration:  BoxDecoration(
                     borderRadius: BorderRadius.all(
                       Radius.circular(6),
                     ),
                     color: Color(0xff98a7cf,),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Sign in',
                       style: TextStyle(
@@ -87,7 +88,7 @@ class SignIn extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 58,),
+               SizedBox(height: 40,),
               Text(
                 '- Or sign in with -',
                 style: GoogleFonts.exo(
@@ -96,7 +97,7 @@ class SignIn extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 25,),
+               SizedBox(height: 20,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -116,13 +117,13 @@ class SignIn extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 50),
+               SizedBox(height: 25),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'Don`t have an account?',
-                    style: TextStyle(color: Colors.grey[600]),
+                    style: TextStyle(color: Colors.grey,fontSize: 16),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -131,7 +132,6 @@ class SignIn extends StatelessWidget {
                     child: Text(
                       'Sign up',
                       style: TextStyle(
-                        // color: Colors.blue,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -143,5 +143,15 @@ class SignIn extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+class AuthCheack extends StatelessWidget {
+  const AuthCheack({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return (AuthService.authService.getCurrentUser() == null)
+        ? const SignIn()
+        : const HomePage();
   }
 }

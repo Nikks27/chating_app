@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen>
       duration:  Duration(seconds: 2);
 
     Timer(
-      const Duration(seconds: 2),
+       Duration(seconds: 2),
           () {
         Navigator.of(context).pushNamed('/Auth');
       },

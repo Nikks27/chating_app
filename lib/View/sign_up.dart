@@ -23,12 +23,12 @@ class SignUp extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20, top: 110),
+          padding: EdgeInsets.only(left: 20, right: 20, top: 110),
           child: Column(
             children: [
               TextField(
                 controller: controller.txtName,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintStyle: TextStyle(color: Colors.grey),
                   hintText: 'Name',
                   border: OutlineInputBorder(
@@ -38,11 +38,11 @@ class SignUp extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 22),
+              SizedBox(height: 22),
               TextField(
                 controller: controller.txtEmail,
                 cursorColor: Colors.grey,
-                decoration: const InputDecoration(
+                decoration:  InputDecoration(
                   hintStyle: TextStyle(color: Colors.grey),
                   hintText: 'Email',
                   border: OutlineInputBorder(
@@ -52,10 +52,10 @@ class SignUp extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 22),
+              SizedBox(height: 22),
               TextField(
                 controller: controller.txtPassword,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintStyle: TextStyle(color: Colors.grey),
                   hintText: 'Password',
                   border: OutlineInputBorder(
@@ -68,7 +68,7 @@ class SignUp extends StatelessWidget {
               SizedBox(height: 22),
               TextField(
                 controller: controller.txtConfirm,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintStyle: TextStyle(color: Colors.grey),
                   hintText: 'Confirm Password',
                   border: OutlineInputBorder(
@@ -78,13 +78,12 @@ class SignUp extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 22),
+               SizedBox(height: 22),
               GestureDetector(
                 onTap: () {
                   if (controller.txtPassword.text == controller.txtConfirm.text) {
                     AuthService.authService.createAccountWithEmailAndPassword(
                         controller.txtEmail.text, controller.txtPassword.text);
-        
                     UserModel user = UserModel(
                       name: controller.txtName.text,
                       email: controller.txtEmail.text,
@@ -103,13 +102,13 @@ class SignUp extends StatelessWidget {
                 child: Container(
                   height: 55,
                   width: double.infinity,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(
                       Radius.circular(6),
                     ),
                     color: Color(0xff98a7cf),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Sign up',
                       style: TextStyle(
@@ -121,7 +120,7 @@ class SignUp extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 58),
+               SizedBox(height: 35),
               Text(
                 '- Or sign up with -',
                 style: GoogleFonts.exo(
@@ -130,7 +129,7 @@ class SignUp extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 25),
+               SizedBox(height: 17),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -143,10 +142,7 @@ class SignUp extends StatelessWidget {
                         Get.offAndToNamed('/home');
                       }
                     },
-                    child: Image.asset(
-                      'assets/google.png',
-                      height: 40,
-                    ),
+                    child: Image.asset('assets/google.png', height: 40),
                   ),
                 ],
               ),
