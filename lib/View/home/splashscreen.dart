@@ -19,17 +19,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
-
-    // _animationController = AnimationController(
       duration:  Duration(seconds: 2);
-      // vsync: this,
-
-
-    // _animation = CurvedAnimation(
-    //   parent: _animationController,
-    //   curve: Curves.easeInExpo,
-
-    // _animationController.forward();
 
     Timer(
       const Duration(seconds: 2),
@@ -38,12 +28,6 @@ class _SplashScreenState extends State<SplashScreen>
       },
     );
   }
-
-  // @override
-  // void dispose() {
-  //   _animationController.dispose();
-  //   super.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {

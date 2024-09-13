@@ -22,18 +22,6 @@ class SignIn extends StatelessWidget {
           padding: const EdgeInsets.only(left: 20, right: 20, top: 130),
           child: Column(
             children: [
-              Row(
-                children: [
-                  Text(
-                    'Login your Account',
-                    style: GoogleFonts.exo2(
-                        fontSize: 20, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 27,
-              ),
               TextField(
                 controller: controller.txtEmail,
                 decoration: const InputDecoration(
@@ -123,7 +111,7 @@ class SignIn extends StatelessWidget {
                     },
                     child: Image.asset(
                       'assets/google.png',
-                      height: 44,
+                      height: 40,
                     ),
                   ),
                 ],

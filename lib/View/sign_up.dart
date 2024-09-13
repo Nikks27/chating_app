@@ -23,19 +23,9 @@ class SignUp extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20, top: 65),
+          padding: const EdgeInsets.only(left: 20, right: 20, top: 110),
           child: Column(
             children: [
-              Row(
-                children: [
-                  Text(
-                    'Create New Account',
-                    style: GoogleFonts.exo2(
-                        fontSize: 22, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-              SizedBox(height: 22,),
               TextField(
                 controller: controller.txtName,
                 decoration: const InputDecoration(
@@ -155,7 +145,7 @@ class SignUp extends StatelessWidget {
                     },
                     child: Image.asset(
                       'assets/google.png',
-                      height: 44,
+                      height: 40,
                     ),
                   ),
                 ],
