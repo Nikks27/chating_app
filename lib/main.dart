@@ -1,9 +1,13 @@
+import 'package:chating_app/View/auth_manager.dart';
+import 'package:chating_app/View/home/chat_page.dart';
 import 'package:chating_app/View/home/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'View/home/authchek..dart';
-import 'View/home/splashscreen.dart';
+import 'View/Call/Call_Page.dart';
+import 'View/Profile/Profile_Page.dart';
+import 'View/Status/Status.dart';
+import 'View/bottombar/Bottombar.dart';
 import 'View/sign_in.dart';
 import 'View/sign_up.dart';
 import 'firebase_options.dart';
@@ -24,11 +28,19 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       getPages: [
-        GetPage(name: '/', page: () =>  SplashScreen()),
-        GetPage(name: '/Auth', page: () =>  AuthCheack()),
-        GetPage(name: '/signIn', page: () =>  SignIn()),
-        GetPage(name: '/SignUp', page: () =>  SignUp()),
-        GetPage(name: '/home', page: () =>  HomePage()),
+        GetPage(name: '/', page: () => AuthManager()),
+        GetPage(name: '/signIn', page: () => SignIn()),
+        GetPage(name: '/signUp', page: () => SignUp()),
+        GetPage(name: '/navigator', page: () => NavigationMenu()),
+        GetPage(name: '/home', page: () => HomePage()),
+        GetPage(name: '/chat', page: () => ChatPage()),
+        GetPage(name: '/status', page: () => StatusScreen()),
+        GetPage(name: '/call', page: () => CallPage()),
+        GetPage(name: '/profile', page: () => ProfilePage()),
+        // GetPage(name: '/Auth', page: () =>  AuthCheack()),
+        // GetPage(name: '/signIn', page: () =>  SignIn()),
+        // GetPage(name: '/SignUp', page: () =>  SignUp()),
+        // GetPage(name: '/home', page: () =>  HomeScreen()),
       ],
     );
   }

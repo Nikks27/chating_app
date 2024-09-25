@@ -63,6 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '27008141652',
     projectId: 'chating-app-7198d',
     storageBucket: 'chating-app-7198d.appspot.com',
+    androidClientId: '27008141652-32bsu3ed5fsokksd2msifctu8prudovh.apps.googleusercontent.com',
+    iosClientId: '27008141652-pvlt979pt3pjnlhoer3qr7baotnm2n7u.apps.googleusercontent.com',
     iosBundleId: 'com.example.chatingApp',
   );
 
@@ -72,6 +74,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '27008141652',
     projectId: 'chating-app-7198d',
     storageBucket: 'chating-app-7198d.appspot.com',
+    androidClientId: '27008141652-32bsu3ed5fsokksd2msifctu8prudovh.apps.googleusercontent.com',
+    iosClientId: '27008141652-pvlt979pt3pjnlhoer3qr7baotnm2n7u.apps.googleusercontent.com',
     iosBundleId: 'com.example.chatingApp',
   );
 
@@ -83,4 +87,5 @@ class DefaultFirebaseOptions {
     authDomain: 'chating-app-7198d.firebaseapp.com',
     storageBucket: 'chating-app-7198d.appspot.com',
   );
+
 }

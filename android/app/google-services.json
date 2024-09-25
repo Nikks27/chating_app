@@ -12,7 +12,20 @@
           "package_name": "com.example.chating_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "27008141652-32bsu3ed5fsokksd2msifctu8prudovh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chating_app",
+            "certificate_hash": "05e44e5eab6684035c231551e8e935e1bb36209b"
+          }
+        },
+        {
+          "client_id": "27008141652-95tov50992236f0nt3928mcs868gio5c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAmYpR3ukqu45QNqAmNIyIka559y882sSE"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "27008141652-95tov50992236f0nt3928mcs868gio5c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "27008141652-pvlt979pt3pjnlhoer3qr7baotnm2n7u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.chatingApp"
+              }
+            }
+          ]
         }
       }
     }
