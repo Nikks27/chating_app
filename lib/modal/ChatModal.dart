@@ -5,21 +5,21 @@ class ChatModel {
   Timestamp time;
   bool isRead;
 
-  ChatModel(
-      {required this.sender,
-        required this.receiver,
-        required this.message,
-        required this.time,
-         this.isRead= false,
-      });
+  ChatModel({
+    required this.sender,
+    required this.receiver,
+    required this.message,
+    required this.time,
+    this.isRead = false,
+  });
 
   factory ChatModel.fromMap(Map m1) {
     return ChatModel(
-        sender: m1['sender'],
-        receiver: m1['receiver'],
-        message: m1['message'],
-        time: m1['time'],
-        isRead: m1['isRead']?? false,
+      sender: m1['sender'],
+      receiver: m1['receiver'],
+      message: m1['message'],
+      time: m1['time'],
+      isRead: m1['isRead'] ?? false,
     );
   }
 
@@ -28,8 +28,8 @@ class ChatModel {
       'sender': chat.sender,
       'receiver': chat.receiver,
       'message': chat.message,
-      'time':chat.time,
-      'isRead':chat.isRead,
+      'time': chat.time,
+      'isRead': chat.isRead,
     };
   }
 }

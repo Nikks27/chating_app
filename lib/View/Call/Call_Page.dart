@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class CallPage extends StatelessWidget {
-  const CallPage ({super.key});
+  const CallPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-      title: Text('Call Page'),
+        title: Text('Call Page'),
         centerTitle: true,
       ),
       body: Column(

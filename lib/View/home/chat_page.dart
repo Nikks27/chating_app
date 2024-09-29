@@ -1,10 +1,13 @@
+import 'dart:developer';
 import 'package:chating_app/View/home/home_page.dart';
 import 'package:chating_app/modal/ChatModal.dart';
+import 'package:chating_app/services/Local_Notification_Services.dart';
 import 'package:chating_app/services/auth_services.dart';
 import 'package:chating_app/services/firebase_cloud_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../global/global.dart';
 
 
 class ChatPage extends StatelessWidget {
@@ -16,7 +19,27 @@ class ChatPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(chatController.receiverName.value),
         actions: [
-          // MenuBar(children: )
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              switch(value)
+                  {
+                    case 'Edit':log('Edit');
+                    case "Wallpaper":log('Wallpaper');
+                    case "Clear Chat":CloudFireStoreService.cloudFireStoreService.clearChatHistory(chatController.receiverEmail.value);
+                    case "Block":log('Block');
+                    case "Report":log('Report');
+                  }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                buildPopupMenuItem('Edit',),
+                buildPopupMenuItem('Wallpaper',),
+                buildPopupMenuItem('Clear Chat',),
+                buildPopupMenuItem('Block',),
+                buildPopupMenuItem('Report'),
+              ];
+            },
+            icon: Icon(Icons.more_vert),),
         ],
       ),
       body: Padding(
@@ -52,7 +75,13 @@ class ChatPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: List.generate(
                       chatList.length,
-                        (index) => GestureDetector(
+                        (index) {
+                          if (chatList[index].isRead == false &&
+                              chatList[index].receiver == AuthService.authService.getCurrentUser()!.email) {
+                           CloudFireStoreService.cloudFireStoreService.updateMessageReadStatus(
+                                chatController.receiverEmail.value, docIdList[index]);
+                          }
+                        return GestureDetector(
                           onLongPress: () {
                             if(chatList[index].sender == AuthService.authService.getCurrentUser()!.email!)
                               {
@@ -178,7 +207,7 @@ class ChatPage extends StatelessWidget {
                           //   alignment: (chatList[index].sender == AuthService.authService.getCurrentUser()!.email!)?Alignment.centerRight:Alignment.centerLeft,
                           //   child: Text(chatList[index].message.toString(),),
                           //   ),
-                        ),
+                        );}
                         ),
                     ),
                 );
@@ -205,9 +234,10 @@ class ChatPage extends StatelessWidget {
                                 receiver: chatController.receiverEmail.value,
                                 message: chatController.txtMessage.text,
                                 time: Timestamp.now());
-                    
+
                             await CloudFireStoreService.cloudFireStoreService
                                 .addChatInFireStore(chat);
+                           await LocalNotificationService.localNotificationService.showNotification(AuthService.authService.getCurrentUser()!.email!,chatController.txtMessage.text);
                             chatController.txtMessage.clear();
                           },
                           icon: Icon(Icons.send),

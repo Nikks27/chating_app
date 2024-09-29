@@ -1,21 +1,18 @@
 import 'package:chating_app/modal/user_modal.dart';
-import 'package:chating_app/services/auth_services.dart';
 import 'package:chating_app/services/firebase_cloud_services.dart';
-import 'package:chating_app/services/google_services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controller/ChatController.dart';
+import '../../global/global.dart';
+import '../../services/Local_Notification_Services.dart';
 
-
-var chatController  = Get.put(ChatController());
+var chatController = Get.put(ChatController());
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       // drawer: Drawer(
       //   child: FutureBuilder(
@@ -49,7 +46,26 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Home Page'),
         actions: [
-          // PopupMenuItem(child: )
+          IconButton(
+              onPressed: () async {
+                await LocalNotificationService.localNotificationService
+                    .scheduledNotification();
+              },
+              icon: Icon(Icons.notification_add_outlined)),
+    PopupMenuButton<String>(
+    onSelected: (value) {
+    print('Selected: $value');
+    },
+    itemBuilder: (BuildContext context) {
+    return [
+    buildPopupMenuItem('New group',),
+    buildPopupMenuItem('New broadcast',),
+    buildPopupMenuItem('Linked devices', ),
+    buildPopupMenuItem('Payments', ),
+    buildPopupMenuItem('Settings',),
+    ];
+    },
+    icon: Icon(Icons.more_vert),),
         ],
       ),
       body: FutureBuilder(
@@ -57,31 +73,41 @@ class HomePage extends StatelessWidget {
             .readAllUserFromCloudFireStore(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text(snapshot.error.toString()),);
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator(),);
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           }
           List data = snapshot.data!.docs;
           List<UserModel> userList = [];
           for (var user in data) {
-            userList.add(UserModel.fromMap(user.data(),),);
+            userList.add(
+              UserModel.fromMap(
+                user.data(),
+              ),
+            );
           }
           return ListView.builder(
             itemCount: userList.length,
             itemBuilder: (context, index) {
               return ListTile(
-                 onTap: () {
-                   chatController.getReceiver(userList[index].email!,userList[index].name!);
-                   Get.toNamed("/chat");
-                 },
-                leading: CircleAvatar(backgroundImage: NetworkImage(userList[index].image!),),
+                onTap: () {
+                  chatController.getReceiver(
+                      userList[index].email!, userList[index].name!);
+                  Get.toNamed("/chat");
+                },
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(userList[index].image!),
+                ),
                 title: Text(userList[index].name!),
                 subtitle: Text(userList[index].email!),
               );
-          },
+            },
           );
-
         },
       ),
 
@@ -115,9 +141,7 @@ class HomePage extends StatelessWidget {
       //           // NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
       //         ]
       //     )),
-
     );
-
   }
 }
 
@@ -150,36 +174,6 @@ class HomePage extends StatelessWidget {
 //
 //   final Screen = [ HomePage(), StatusScreen(),CallPage(),ProfilePage(),];
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/material.dart';
@@ -292,3 +286,8 @@ class HomePage extends StatelessWidget {
 //     );
 //   }
 // }
+
+
+
+
+

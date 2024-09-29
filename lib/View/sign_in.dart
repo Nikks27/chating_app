@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
-import 'home/home_page.dart';
-
 class SignIn extends StatelessWidget {
   const SignIn({super.key});
 
@@ -32,7 +30,9 @@ class SignIn extends StatelessWidget {
                   ),
                   labelText: 'Email'),
             ),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             TextField(
               controller: controller.txtPassword,
               decoration: InputDecoration(
@@ -52,59 +52,34 @@ class SignIn extends StatelessWidget {
               child: Text('Dont Have A Acount? Sign Up'),
             ),
             ElevatedButton(
-                onPressed: () async {
-                  // user null
-                  String response = await AuthService.authService.signInwithEmailAndPassword(controller.txtEmail.text,controller.txtPassword.text);
-                  // user
-                  User? user = AuthService.authService.getCurrentUser();
-                  if (user != null && response == "success") {
-                    Get.offAndToNamed('/navigator');
-                  }
-                  else {
-                    Get.snackbar('Sign in Failed !', response);
-                  }
-                },
-                child: Text('Sign In'),),
-
-            SignInButton(Buttons.google, onPressed: (){
+              onPressed: () async {
+                // user null
+                String response = await AuthService.authService
+                    .signInwithEmailAndPassword(
+                        controller.txtEmail.text, controller.txtPassword.text);
+                // user
+                User? user = AuthService.authService.getCurrentUser();
+                if (user != null && response == "success") {
+                  Get.offAndToNamed('/navigator');
+                } else {
+                  Get.snackbar('Sign in Failed !', response);
+                }
+              },
+              child: Text('Sign In'),
+            ),
+            SignInButton(Buttons.google, onPressed: () {
               GoogleAuthService.googleAuthService.signInWithGoogle();
               User? user = AuthService.authService.getCurrentUser();
               if (user != null) {
                 Get.offAndToNamed('/home');
               }
-            } ),
+            }),
           ],
         ),
       ),
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/material.dart';
@@ -259,4 +234,3 @@ class SignIn extends StatelessWidget {
 //         : const HomeScreen();
 //   }
 // }
-

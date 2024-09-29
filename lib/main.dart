@@ -1,6 +1,7 @@
 import 'package:chating_app/View/auth_manager.dart';
 import 'package:chating_app/View/home/chat_page.dart';
 import 'package:chating_app/View/home/home_page.dart';
+import 'package:chating_app/services/Local_Notification_Services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,13 +12,17 @@ import 'View/bottombar/Bottombar.dart';
 import 'View/sign_in.dart';
 import 'View/sign_up.dart';
 import 'firebase_options.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  await LocalNotificationService.localNotificationService
+      .initNotificationService();
+  tz.initializeTimeZones();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -45,4 +50,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

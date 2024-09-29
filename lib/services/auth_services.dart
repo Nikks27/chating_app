@@ -1,52 +1,50 @@
 import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AuthService
-{
+class AuthService {
   AuthService._();
-  static AuthService authService=AuthService._();
-  final FirebaseAuth _firebaseAuth =FirebaseAuth.instance;
+
+  static AuthService authService = AuthService._();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
 //   Account Create
-  Future<void> createAccountWithEmailAndPassword(String email,String password)
-  async {
+  Future<void> createAccountWithEmailAndPassword(
+      String email, String password) async {
     print("Create > $email & $password");
-    try{
-      await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
-    } catch(e){
+    try {
+      await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
+    } catch (e) {
       print("Error >> $e");
     }
   }
+
 //  Login
-  Future<String> signInwithEmailAndPassword(String email,String password)
-  async {
-    try
-    {
-      await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+  Future<String> signInwithEmailAndPassword(
+      String email, String password) async {
+    try {
+      await _firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
       return "success";
-    }
-    catch(e)
-    {
+    } catch (e) {
       return e.toString();
     }
   }
-  Future<void> singOutUser()
-  async {
+
+  Future<void> singOutUser() async {
     await _firebaseAuth.signOut();
   }
-  User? getCurrentUser()
-  {
-    User? user= _firebaseAuth.currentUser;
-    if(user!=null)
-    {
+
+  User? getCurrentUser() {
+    User? user = _firebaseAuth.currentUser;
+    if (user != null) {
       log("email:${user.email}");
     }
     return user;
-
   }
-
-
-
 }
+
+// Clear All Chat
 
 
 // import 'dart:developer';
@@ -94,12 +92,3 @@ class AuthService
 //     return user;
 //   }
 // }
-
-
-
-
-
-
-
-
-

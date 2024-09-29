@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../modal/ChatModal.dart';
 import '../modal/user_modal.dart';
 import 'auth_services.dart';
-import 'package:flutter/material.dart';
+
 
 class CloudFireStoreService {
   // collection :doc-set-update/add
@@ -114,6 +114,55 @@ class CloudFireStoreService {
 
     await fireStore.collection('chatroom').doc(docId).collection('chat')
         .doc(dcId).update({'isRead': true});
+  }
+
+  // Clear All Chat
+
+  Future<void> clearChatHistory(String receiverEmail) async {
+    try {
+
+      String sender= AuthService.authService.getCurrentUser()!.email!;
+      List doc=[sender,receiverEmail];
+      doc.sort;
+      String docId=doc.join("_");
+      CollectionReference chatCollection = FirebaseFirestore.instance
+          .collection('chatroom')
+          .doc(docId)
+          .collection('chat');
+
+      // Retrieve all the documents in the chat collection
+      QuerySnapshot querySnapshot = await chatCollection.get();
+
+      // Batch delete for efficiency
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      for (var doc in querySnapshot.docs) {
+        batch.delete(doc.reference);
+      }
+
+      await batch.commit();
+      print("All chat messages cleared successfully.");
+    } catch (e) {
+      print("Error clearing chat history: $e");
+    }
+  }
+
+
+// online off line status
+
+  Future<void> toggleOnlineStatus(
+      bool status, Timestamp timestamp, bool isTyping) async {
+    String email = AuthService.authService.getCurrentUser()!.email!;
+    await _fireStore.collection("users").doc(email).update({
+      'isOnline': status,
+      'timestamp': timestamp,
+      'isTyping': isTyping,
+    });
+  }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> checkUserIsOnlineOrNot(
+      String email) {
+    return _fireStore.collection("users").doc(email).snapshots();
   }
 
 

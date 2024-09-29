@@ -13,7 +13,7 @@ class SignUp extends StatelessWidget {
     var controller = Get.put(Authcontroller());
     return Scaffold(
       appBar: AppBar(
-        title:  Text('Sign Up'),
+        title: Text('Sign Up'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -22,24 +22,28 @@ class SignUp extends StatelessWidget {
           children: [
             TextField(
               controller: controller.txtName,
-              decoration:  InputDecoration(
+              decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   labelText: 'Name'),
             ),
-            SizedBox(height: 5,),
+            SizedBox(
+              height: 5,
+            ),
             TextField(
               controller: controller.txtEmail,
-              decoration:  InputDecoration(
+              decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   labelText: 'Email'),
             ),
-            SizedBox(height: 5,),
+            SizedBox(
+              height: 5,
+            ),
             TextField(
               controller: controller.txtPhone,
               decoration: InputDecoration(
@@ -49,7 +53,9 @@ class SignUp extends StatelessWidget {
                   ),
                   labelText: 'Phone'),
             ),
-            SizedBox(height: 5,),
+            SizedBox(
+              height: 5,
+            ),
             TextField(
               controller: controller.txtPassword,
               decoration: InputDecoration(
@@ -59,7 +65,9 @@ class SignUp extends StatelessWidget {
                   ),
                   labelText: 'Password'),
             ),
-            SizedBox(height: 5,),
+            SizedBox(
+              height: 5,
+            ),
             TextField(
               controller: controller.txtConfirmPassword,
               decoration: InputDecoration(
@@ -69,7 +77,9 @@ class SignUp extends StatelessWidget {
                   ),
                   labelText: ' Confirm Password'),
             ),
-             SizedBox(height: 15,),
+            SizedBox(
+              height: 15,
+            ),
             TextButton(
               onPressed: () {
                 Get.back();
