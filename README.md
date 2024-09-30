@@ -1,6 +1,6 @@
 # chating_app
 
-<h1 align="center"> Log in</h1>
+<h1 align="center"> Chatting App</h1>
 
 
 <div align ="center">
