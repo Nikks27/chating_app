@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:chating_app/services/firebase_cloud_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,12 +8,18 @@ import 'package:get/get.dart';
 class ChatController extends GetxController {
   RxString receiverEmail = "".obs;
   RxString receiverName = "".obs;
+  RxBool receiverOnline = false.obs;
+  RxBool receiverTyping = false.obs;
+  RxString receiverLastSeen = "".obs;
   TextEditingController txtMessage = TextEditingController();
   TextEditingController txtUpdateMessage = TextEditingController();
 
-  void getReceiver(String email, String name) {
+  void getReceiver(String email, String name, bool isOnline, int? lastSeen, bool isTyping) {
     receiverEmail.value = email;
     receiverName.value = name;
+    receiverOnline.value = isOnline;
+    receiverLastSeen.value = lastSeen != null ? DateTime.fromMillisecondsSinceEpoch(lastSeen).toString() : "";
+    receiverTyping.value = isTyping;
   }
 
   String formatTimestamp(Timestamp timestamp) {

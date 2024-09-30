@@ -8,8 +8,39 @@ import '../../services/Local_Notification_Services.dart';
 
 var chatController = Get.put(ChatController());
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    setUserStatus(isOnline: true);
+    WidgetsBinding.instance.addObserver(this);
+  }
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        setUserStatus(isOnline: true);
+        break;
+      case AppLifecycleState.paused:
+        setUserStatus(isOnline: false);
+        break;
+      case _ :
+    }
+    super.didChangeAppLifecycleState(state);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,20 +83,31 @@ class HomePage extends StatelessWidget {
                     .scheduledNotification();
               },
               icon: Icon(Icons.notification_add_outlined)),
-    PopupMenuButton<String>(
-    onSelected: (value) {
-    print('Selected: $value');
-    },
-    itemBuilder: (BuildContext context) {
-    return [
-    buildPopupMenuItem('New group',),
-    buildPopupMenuItem('New broadcast',),
-    buildPopupMenuItem('Linked devices', ),
-    buildPopupMenuItem('Payments', ),
-    buildPopupMenuItem('Settings',),
-    ];
-    },
-    icon: Icon(Icons.more_vert),),
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              print('Selected: $value');
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                buildPopupMenuItem(
+                  'New group',
+                ),
+                buildPopupMenuItem(
+                  'New broadcast',
+                ),
+                buildPopupMenuItem(
+                  'Linked devices',
+                ),
+                buildPopupMenuItem(
+                  'Payments',
+                ),
+                buildPopupMenuItem(
+                  'Settings',
+                ),
+              ];
+            },
+            icon: Icon(Icons.more_vert),
+          ),
         ],
       ),
       body: FutureBuilder(
@@ -96,12 +138,13 @@ class HomePage extends StatelessWidget {
             itemBuilder: (context, index) {
               return ListTile(
                 onTap: () {
+                  final user = userList[index];
                   chatController.getReceiver(
-                      userList[index].email!, userList[index].name!);
+                      user.email ?? "", user.name ?? "", user.online, user.lastSeen, false);
                   Get.toNamed("/chat");
                 },
                 leading: CircleAvatar(
-                  backgroundImage: NetworkImage(userList[index].image!),
+                  backgroundImage: NetworkImage("userList[index]!.image"),
                 ),
                 title: Text(userList[index].name!),
                 subtitle: Text(userList[index].email!),
@@ -142,6 +185,15 @@ class HomePage extends StatelessWidget {
       //         ]
       //     )),
     );
+  }
+
+  Future<void> setUserStatus({required bool isOnline}) async {
+    UserModel? user = await CloudFireStoreService.cloudFireStoreService
+        .readCurrentUserFromFireStore();
+    if(user != null){
+      user = user.copyWith(online: isOnline, lastSeen: isOnline ? null : DateTime.now().millisecondsSinceEpoch);
+      CloudFireStoreService.cloudFireStoreService.insertUserIntoFireStore(user);
+    }
   }
 }
 
@@ -287,7 +339,11 @@ class HomePage extends StatelessWidget {
 //   }
 // }
 
-
-
-
-
+Future<void> setUserStatus({required bool isOnline}) async {
+  UserModel? user = await CloudFireStoreService.cloudFireStoreService
+      .readCurrentUserFromFireStore();
+  if(user != null){
+    user = user.copyWith(online: isOnline, lastSeen: isOnline ? null : DateTime.now().millisecondsSinceEpoch);
+    CloudFireStoreService.cloudFireStoreService.insertUserIntoFireStore(user);
+  }
+}

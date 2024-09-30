@@ -98,7 +98,7 @@ class SignUp extends StatelessWidget {
                     UserModel user = UserModel(
                         name: controller.txtName.text,
                         email: controller.txtEmail.text,
-                        image: "",
+                        image: "https://pngtree.com/so/profile",
                         phone: controller.txtPhone.text,
                         token: "-------");
                     CloudFireStoreService.cloudFireStoreService

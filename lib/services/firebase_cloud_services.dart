@@ -4,7 +4,6 @@ import '../modal/ChatModal.dart';
 import '../modal/user_modal.dart';
 import 'auth_services.dart';
 
-
 class CloudFireStoreService {
   // collection :doc-set-update/add
   CloudFireStoreService._();
@@ -14,23 +13,17 @@ class CloudFireStoreService {
 
   FirebaseFirestore fireStore = FirebaseFirestore.instance;
 
-  void insertUserIntoFireStore(UserModel user) {
-    fireStore.collection("user").doc(user.email).set({
-      'email': user.email,
-      'name': user.name,
-      'phone': user.phone,
-      'image': user.image,
-      'token': user.token,
-      'isRead':user.isRead,
-    });
-  }
+  void insertUserIntoFireStore(UserModel user) =>
+      fireStore.collection("user").doc(user.email).set(user.toMap());
 
   // READ DATA FOR CURRENT USER - PROFILE
 
-  Future<DocumentSnapshot<Map<String, dynamic>>>
-      readCurrentUserFromFireStore() async {
+  Future<UserModel?> readCurrentUserFromFireStore() async {
     User? user = AuthService.authService.getCurrentUser();
-    return await fireStore.collection("user").doc(user!.email).get();
+    final userData =
+        (await fireStore.collection("user").doc(user!.email).get()).data();
+    if (userData != null) return UserModel.fromMap(userData);
+    return null;
   }
 
   // READ ALL USER FROM FIRE STORE
@@ -93,15 +86,56 @@ class CloudFireStoreService {
     );
   }
 
+  // UPDATE Typing
+
+  Future<void> updateTyping(String receiver, bool isTyping) async {
+    String sender = AuthService.authService.getCurrentUser()!.email!;
+    List doc = [sender, receiver];
+    doc.sort;
+    String docId = doc.join("_");
+    final typingList = ((await fireStore.collection("chatroom").doc(docId).get())
+        .data()?["typing"] as List?) ?? [];
+    isTyping
+        ? (typingList.contains(sender) ? typingList : typingList
+      .add(sender))
+        : typingList
+      .remove(sender);
+    await fireStore.collection("chatroom").doc(docId).set(
+      {
+        'typing': typingList
+      },
+    );
+  }
+
+  //Stream For Typing
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> streamTyping(String receiver) {
+    String sender = AuthService.authService.getCurrentUser()!.email!;
+    List doc = [sender, receiver];
+    doc.sort;
+    String docId = doc.join("_");
+    return fireStore.collection("chatroom").doc(docId).snapshots();
+  }
+
+  //Stream For User Status
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> streamUserStatus(String receiver) {
+    return fireStore.collection("user").doc(receiver).snapshots();
+  }
+
   // DELET MESSAGE
 
-  Future<void> removeChat(String dcId,String receiver)
-  async {
-    String sender= AuthService.authService.getCurrentUser()!.email!;
-    List doc=[sender,receiver];
+  Future<void> removeChat(String dcId, String receiver) async {
+    String sender = AuthService.authService.getCurrentUser()!.email!;
+    List doc = [sender, receiver];
     doc.sort;
-    String docId=doc.join("_");
-    await fireStore.collection("chatroom").doc(docId).collection("chat").doc(dcId).delete();
+    String docId = doc.join("_");
+    await fireStore
+        .collection("chatroom")
+        .doc(docId)
+        .collection("chat")
+        .doc(dcId)
+        .delete();
   }
 
   // Read MASSEGE
@@ -112,60 +146,36 @@ class CloudFireStoreService {
     doc.sort();
     String docId = doc.join("_");
 
-    await fireStore.collection('chatroom').doc(docId).collection('chat')
-        .doc(dcId).update({'isRead': true});
+    await fireStore
+        .collection('chatroom')
+        .doc(docId)
+        .collection('chat')
+        .doc(dcId)
+        .update({'isRead': true});
   }
 
   // Clear All Chat
 
   Future<void> clearChatHistory(String receiverEmail) async {
     try {
-
-      String sender= AuthService.authService.getCurrentUser()!.email!;
-      List doc=[sender,receiverEmail];
+      String sender = AuthService.authService.getCurrentUser()!.email!;
+      List doc = [sender, receiverEmail];
       doc.sort;
-      String docId=doc.join("_");
+      String docId = doc.join("_");
       CollectionReference chatCollection = FirebaseFirestore.instance
           .collection('chatroom')
           .doc(docId)
           .collection('chat');
-
-      // Retrieve all the documents in the chat collection
       QuerySnapshot querySnapshot = await chatCollection.get();
-
-      // Batch delete for efficiency
       WriteBatch batch = FirebaseFirestore.instance.batch();
 
       for (var doc in querySnapshot.docs) {
         batch.delete(doc.reference);
       }
-
       await batch.commit();
       print("All chat messages cleared successfully.");
     } catch (e) {
       print("Error clearing chat history: $e");
     }
   }
-
-
-// online off line status
-
-  Future<void> toggleOnlineStatus(
-      bool status, Timestamp timestamp, bool isTyping) async {
-    String email = AuthService.authService.getCurrentUser()!.email!;
-    await _fireStore.collection("users").doc(email).update({
-      'isOnline': status,
-      'timestamp': timestamp,
-      'isTyping': isTyping,
-    });
-  }
-
-  Stream<DocumentSnapshot<Map<String, dynamic>>> checkUserIsOnlineOrNot(
-      String email) {
-    return _fireStore.collection("users").doc(email).snapshots();
-  }
-
-
-
-
 }

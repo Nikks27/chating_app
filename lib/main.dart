@@ -2,6 +2,7 @@ import 'package:chating_app/View/auth_manager.dart';
 import 'package:chating_app/View/home/chat_page.dart';
 import 'package:chating_app/View/home/home_page.dart';
 import 'package:chating_app/services/Local_Notification_Services.dart';
+import 'package:chating_app/services/firebase_masseging_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,6 +23,7 @@ Future<void> main() async {
   await LocalNotificationService.localNotificationService
       .initNotificationService();
   tz.initializeTimeZones();
+  await FirebaseMessagingService.fm.requestPermission();
   runApp(MyApp());
 }
 

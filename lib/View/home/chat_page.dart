@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:chating_app/View/home/home_page.dart';
 import 'package:chating_app/modal/ChatModal.dart';
+import 'package:chating_app/modal/user_modal.dart';
 import 'package:chating_app/services/Local_Notification_Services.dart';
 import 'package:chating_app/services/auth_services.dart';
 import 'package:chating_app/services/firebase_cloud_services.dart';
@@ -9,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../global/global.dart';
 
+Timer? timer;
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -17,29 +20,81 @@ class ChatPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(chatController.receiverName.value),
+
+        title: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+          stream: CloudFireStoreService.cloudFireStoreService.streamUserStatus(chatController.receiverEmail.value),
+          builder: (context, snapshot) {
+            final userData = snapshot.data?.data();
+            final user = userData != null ? UserModel.fromMap(userData) : null;
+            return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+              stream: CloudFireStoreService.cloudFireStoreService.streamTyping(chatController.receiverEmail.value),
+              builder: (context, typingSnapshot) {
+                final isTyping = (typingSnapshot.data?.data()?["typing"] as List?)?.contains(chatController.receiverEmail.value) ?? false;
+                final isOnline = user?.online == true || chatController.receiverOnline.value;
+                final lastSeen = user?.lastSeen != null ? DateTime.now.toString() : chatController.receiverLastSeen.value;
+                return Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right:10),
+                      child: CircleAvatar(backgroundImage: NetworkImage(""),),
+                    ),
+                    SizedBox(width: 5,),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(chatController.receiverName.value),
+                        Text(
+                         isTyping ?
+                        "Typing"
+                          : isOnline
+                              ? "Online"
+                              : lastSeen,
+                          style: TextStyle(fontSize: 12, color: isTyping ? Colors.blue : isOnline ? Colors.green : Colors.red),
+                        )
+                      ],
+                    ),
+                  ],
+                );
+              }
+            );
+          }
+        ),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
-              switch(value)
-                  {
-                    case 'Edit':log('Edit');
-                    case "Wallpaper":log('Wallpaper');
-                    case "Clear Chat":CloudFireStoreService.cloudFireStoreService.clearChatHistory(chatController.receiverEmail.value);
-                    case "Block":log('Block');
-                    case "Report":log('Report');
-                  }
+              switch (value) {
+                case 'Edit':
+                  log('Edit');
+                case "Wallpaper":
+                  log('Wallpaper');
+                case "Clear Chat":
+                  CloudFireStoreService.cloudFireStoreService.clearChatHistory(chatController.receiverEmail.value);
+                case "Block":
+                  log('Block');
+                case "Report":
+                  log('Report');
+              }
             },
             itemBuilder: (BuildContext context) {
               return [
-                buildPopupMenuItem('Edit',),
-                buildPopupMenuItem('Wallpaper',),
-                buildPopupMenuItem('Clear Chat',),
-                buildPopupMenuItem('Block',),
+                buildPopupMenuItem(
+                  'Edit',
+                ),
+                buildPopupMenuItem(
+                  'Wallpaper',
+                ),
+                buildPopupMenuItem(
+                  'Clear Chat',
+                ),
+                buildPopupMenuItem(
+                  'Block',
+                ),
                 buildPopupMenuItem('Report'),
               ];
             },
-            icon: Icon(Icons.more_vert),),
+            icon: Icon(Icons.more_vert),
+          ),
         ],
       ),
       body: Padding(
@@ -53,7 +108,9 @@ class ChatPage extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Center(
-                    child: Text(snapshot.error.toString(),),
+                    child: Text(
+                      snapshot.error.toString(),
+                    ),
                   );
                 }
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -64,7 +121,7 @@ class ChatPage extends StatelessWidget {
 
                 List data = snapshot.data!.docs;
                 List<ChatModel> chatList = [];
-                List<String> docIdList =[];
+                List<String> docIdList = [];
                 for (QueryDocumentSnapshot snap in data) {
                   docIdList.add(snap.id);
                   chatList.add(ChatModel.fromMap(snap.data() as Map));
@@ -73,147 +130,161 @@ class ChatPage extends StatelessWidget {
                 return SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
-                    children: List.generate(
-                      chatList.length,
-                        (index) {
-                          if (chatList[index].isRead == false &&
-                              chatList[index].receiver == AuthService.authService.getCurrentUser()!.email) {
-                           CloudFireStoreService.cloudFireStoreService.updateMessageReadStatus(
-                                chatController.receiverEmail.value, docIdList[index]);
-                          }
-                        return GestureDetector(
-                          onLongPress: () {
-                            if(chatList[index].sender == AuthService.authService.getCurrentUser()!.email!)
-                              {
-                                chatController.txtUpdateMessage = TextEditingController(text: chatList[index].message);
-                                showDialog(context: context, builder:(context) {
-                                  return AlertDialog(
-                                    title:Text("Update"),
-                                    content: TextField(
-                                      controller: chatController.txtUpdateMessage,
-                                    ),
-                                    actions: [
-                                      TextButton(onPressed: () {
+                    children: List.generate(chatList.length, (index) {
+                      if (chatList[index].isRead == false &&
+                          chatList[index].receiver ==
+                              AuthService.authService.getCurrentUser()!.email) {
+                        CloudFireStoreService.cloudFireStoreService
+                            .updateMessageReadStatus(
+                                chatController.receiverEmail.value,
+                                docIdList[index]);
+                      }
+                      return GestureDetector(
+                        onLongPress: () {
+                          if (chatList[index].sender ==
+                              AuthService.authService
+                                  .getCurrentUser()!
+                                  .email!) {
+                            chatController.txtUpdateMessage =
+                                TextEditingController(
+                                    text: chatList[index].message);
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text("Update"),
+                                  content: TextField(
+                                    controller: chatController.txtUpdateMessage,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
                                         String dcId = docIdList[index];
-                                        CloudFireStoreService.cloudFireStoreService.updateChat(chatController.receiverEmail.value,chatController.txtUpdateMessage.text, dcId);
+                                        CloudFireStoreService
+                                            .cloudFireStoreService
+                                            .updateChat(
+                                                chatController
+                                                    .receiverEmail.value,
+                                                chatController
+                                                    .txtUpdateMessage.text,
+                                                dcId);
                                         Get.back();
-                                      }, child: Text("Update"),),
-                                    ],
-                                  );
-
-                                },
-
+                                      },
+                                      child: Text("Update"),
+                                    ),
+                                  ],
                                 );
-                              }
-                          },
-                          onDoubleTap: () {
-                            CloudFireStoreService.cloudFireStoreService
-                                .removeChat(docIdList[index],
-                                chatController.receiverEmail.value);
-                          },
-                          child:
-                          Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: 8, right: 14, left: 14),
+                              },
+                            );
+                          }
+                        },
+                        onDoubleTap: () {
+                          CloudFireStoreService.cloudFireStoreService
+                              .removeChat(docIdList[index],
+                                  chatController.receiverEmail.value);
+                        },
+                        child: Padding(
+                            padding: const EdgeInsets.only(
+                                bottom: 8, right: 14, left: 14),
+                            child: Container(
+                              alignment: (chatList[index].sender ==
+                                      AuthService.authService
+                                          .getCurrentUser()!
+                                          .email!)
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
                               child: Container(
-                                alignment: (chatList[index].sender ==
-                                    AuthService.authService
-                                        .getCurrentUser()!
-                                        .email!)
-                                    ? Alignment.centerRight
-                                    : Alignment.centerLeft,
-                                child: Container(
-                                    padding: const EdgeInsets.all(8.0),
-                                    decoration: BoxDecoration(
-                                      color: (chatList[index].sender ==
+                                padding: const EdgeInsets.all(8.0),
+                                decoration: BoxDecoration(
+                                  color: (chatList[index].sender ==
                                           AuthService.authService
                                               .getCurrentUser()!
                                               .email!)
-                                          ? Colors.purple
-                                          : Colors.blue.shade200,
-                                      borderRadius: (chatList[index].sender ==
+                                      ? Colors.purple
+                                      : Colors.blue.shade200,
+                                  borderRadius: (chatList[index].sender ==
                                           AuthService.authService
                                               .getCurrentUser()!
                                               .email!)
-                                          ? BorderRadius.only(
-                                        topLeft: Radius.circular(13),
-                                        bottomLeft: Radius.circular(13),
-                                        bottomRight: Radius.circular(13),
-                                      )
-                                          : BorderRadius.only(
-                                        topRight: Radius.circular(13),
-                                        bottomLeft: Radius.circular(13),
-                                        bottomRight: Radius.circular(13),
+                                      ? BorderRadius.only(
+                                          topLeft: Radius.circular(13),
+                                          bottomLeft: Radius.circular(13),
+                                          bottomRight: Radius.circular(13),
+                                        )
+                                      : BorderRadius.only(
+                                          topRight: Radius.circular(13),
+                                          bottomLeft: Radius.circular(13),
+                                          bottomRight: Radius.circular(13),
+                                        ),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      chatList[index].message!,
+                                      style: TextStyle(
+                                        color: chatList[index].sender ==
+                                                AuthService.authService
+                                                    .getCurrentUser()!
+                                                    .email!
+                                            ? Colors
+                                                .white // Text color for sent messages
+                                            : Colors.black,
+                                        // Text color for received messages
+                                        fontSize: 18,
                                       ),
                                     ),
-                                    child:Row(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.end,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          chatList[index].message!,
-                                          style: TextStyle(
-                                            color: chatList[index].sender ==
+                                    SizedBox(
+                                      height: 2,
+                                      width: 9,
+                                    ),
+                                    Text(
+                                      chatController.formatTimestamp(
+                                          chatList[index].time),
+                                      style: TextStyle(
+                                        color: chatList[index].sender ==
                                                 AuthService.authService
                                                     .getCurrentUser()!
                                                     .email!
-                                                ? Colors
-                                                .white // Text color for sent messages
-                                                : Colors.black,
-                                            // Text color for received messages
-                                            fontSize: 18,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 2,
-                                          width: 9,
-                                        ),
-                                        Text(
-                                          chatController.formatTimestamp(
-                                              chatList[index].time),
-                                          style: TextStyle(
-                                            color: chatList[index].sender ==
-                                                AuthService.authService
-                                                    .getCurrentUser()!
-                                                    .email!
-                                                ? Colors
+                                            ? Colors
                                                 .white // Time color for sent messages
-                                                : Colors.grey.shade600,
-                                            // Time color for received messages
-                                            fontSize: 13, // Font size
-                                          ),
-                                        ),
-                                        const SizedBox(width: 5),
-                                        if (chatList[index].isRead &&
-                                            chatList[index].sender ==
-                                                AuthService.authService
-                                                    .getCurrentUser()!
-                                                    .email!)
-                                          Icon(
-                                            Icons.done_all_rounded,
-                                            // Read status icon
-                                            color: Colors.blue.shade400,
-                                            size: 18,
-                                          ),
-                                      ],
-                                    ),),
-                              )
-
-                          ),
-                          // Container(
-                          //   margin: EdgeInsets.symmetric(
-                          //     horizontal: 8,vertical: 2),
-                          //   alignment: (chatList[index].sender == AuthService.authService.getCurrentUser()!.email!)?Alignment.centerRight:Alignment.centerLeft,
-                          //   child: Text(chatList[index].message.toString(),),
-                          //   ),
-                        );}
-                        ),
-                    ),
+                                            : Colors.grey.shade600,
+                                        // Time color for received messages
+                                        fontSize: 13, // Font size
+                                      ),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    if (chatList[index].isRead &&
+                                        chatList[index].sender ==
+                                            AuthService.authService
+                                                .getCurrentUser()!
+                                                .email!)
+                                      Icon(
+                                        Icons.done_all_rounded,
+                                        // Read status icon
+                                        color: Colors.blue.shade400,
+                                        size: 18,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            )),
+                        // Container(
+                        //   margin: EdgeInsets.symmetric(
+                        //     horizontal: 8,vertical: 2),
+                        //   alignment: (chatList[index].sender == AuthService.authService.getCurrentUser()!.email!)?Alignment.centerRight:Alignment.centerLeft,
+                        //   child: Text(chatList[index].message.toString(),),
+                        //   ),
+                      );
+                    }),
+                  ),
                 );
               },
             )),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -221,6 +292,14 @@ class ChatPage extends StatelessWidget {
                   Expanded(
                     child: TextField(
                       controller: chatController.txtMessage,
+                      onChanged: (value) {
+                        CloudFireStoreService.cloudFireStoreService.updateTyping(chatController.receiverEmail.value, true);
+                        if(timer?.isActive ?? false) timer?.cancel();
+                        timer = Timer(const Duration(seconds: 4), () {
+                          CloudFireStoreService.cloudFireStoreService.updateTyping(chatController.receiverEmail.value, false);
+                          timer?.cancel();
+                        },);
+                      },
                       decoration: InputDecoration(
                         hintText: 'Message',
                         border: OutlineInputBorder(
@@ -230,14 +309,22 @@ class ChatPage extends StatelessWidget {
                         suffixIcon: IconButton(
                           onPressed: () async {
                             ChatModel chat = ChatModel(
-                                sender: AuthService.authService.getCurrentUser()!.email,
+                                sender: AuthService.authService
+                                    .getCurrentUser()!
+                                    .email,
                                 receiver: chatController.receiverEmail.value,
                                 message: chatController.txtMessage.text,
                                 time: Timestamp.now());
 
                             await CloudFireStoreService.cloudFireStoreService
                                 .addChatInFireStore(chat);
-                           await LocalNotificationService.localNotificationService.showNotification(AuthService.authService.getCurrentUser()!.email!,chatController.txtMessage.text);
+                            await LocalNotificationService
+                                .localNotificationService
+                                .showNotification(
+                                    AuthService.authService
+                                        .getCurrentUser()!
+                                        .email!,
+                                    chatController.txtMessage.text);
                             chatController.txtMessage.clear();
                           },
                           icon: Icon(Icons.send),
@@ -245,15 +332,20 @@ class ChatPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(width: 7,),
+                  SizedBox(
+                    width: 7,
+                  ),
                   Container(
                     height: 52,
                     width: 52,
                     decoration: BoxDecoration(
-                      shape:  BoxShape.circle,
+                      shape: BoxShape.circle,
                       color: Colors.grey.shade300,
                     ),
-                    child: Icon(Icons.mic_outlined,size: 32,),
+                    child: Icon(
+                      Icons.mic_outlined,
+                      size: 32,
+                    ),
                   ),
                 ],
               ),

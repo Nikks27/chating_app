@@ -1,3 +1,4 @@
+import 'package:chating_app/View/home/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +29,7 @@ class ProfilePage extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           }
 
-          Map? data = snapshot.data!.data();
-          UserModel userModel = UserModel.fromMap(data!);
+          final userModel = snapshot.data;
           return Padding(
             padding: const EdgeInsets.all(10.0),
             child: SingleChildScrollView(
@@ -40,7 +40,7 @@ class ProfilePage extends StatelessWidget {
                     leading: Stack(
                       children: [
                         CircleAvatar(
-                          backgroundImage: NetworkImage('${userModel.image}'),
+                          backgroundImage: NetworkImage('${userModel?.image}'),
                           radius: 35,
                         ),
                         GestureDetector(
@@ -56,14 +56,14 @@ class ProfilePage extends StatelessWidget {
                       ],
                     ),
                     title: Text(
-                      '   ${userModel.name}',
+                      '   ${userModel?.name}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                       ),
                     ),
                     subtitle: Text(
-                      '    ${userModel.email}',
+                      '    ${userModel?.email}',
                       style: TextStyle(
                         fontSize: 15,
                       ),
@@ -108,6 +108,7 @@ class ProfilePage extends StatelessWidget {
                   InkWell(
                     onTap: () async {
                       // user
+                      await setUserStatus(isOnline: false);
                       await AuthService.authService.singOutUser();
                       await GoogleAuthService.googleAuthService
                           .signOutFromGoogle();
