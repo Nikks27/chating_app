@@ -36,6 +36,12 @@ Tech Stack:
         <img src = "https://github.com/user-attachments/assets/6f8de67d-d774-43f5-aa8e-969007bf9383" height ="550">
         <a href = "https://drive.google.com/file/d/1BdSlpLyH2BRkksa9819v3Nrhm-laFonS/view?usp=sharing"> Video Link </a>
 
+        <h2 align="center"> 👇🏼👇🏼👇🏼👇🏼 Chat app video link 👇🏼👇🏼👇🏼👇🏼 </h2>
+
+<div align="center">
+👉🏼👉🏼👉🏼👉🏼 https://drive.google.com/file/d/1BdSlpLyH2BRkksa9819v3Nrhm-laFonS/view?usp=sharing  👈🏼👈🏼👈🏼👈🏼
+</div>
+
 
 </div>
 
